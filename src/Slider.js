@@ -282,7 +282,7 @@ export default class Slider extends PureComponent {
 
     var touchOverflowStyle = this._getTouchOverflowStyle();
     return (
-      <View {...other} style={[mainStyles.container, {
+      <View {...other} style={[this._isHorizontal() ? mainStyles.containerHorizontal : mainStyles.containerVertical, {
         justifyContent: this._isHorizontal() ? 'center' : 'flex-end'
       }, style]} onLayout={this._measureContainer}>
         <View
@@ -479,22 +479,6 @@ export default class Slider extends PureComponent {
     }
   }
 
-  _getValueWithRatio (ratio) {
-    if (this.props.step) {
-      return Math.max(this.props.minimumValue,
-        Math.min(this.props.maximumValue,
-          this.props.minimumValue + Math.round(ratio * (this.props.maximumValue - this.props.minimumValue) / this.props.step) * this.props.step
-        )
-      );
-    } else {
-      return Math.max(this.props.minimumValue,
-        Math.min(this.props.maximumValue,
-          ratio * (this.props.maximumValue - this.props.minimumValue) + this.props.minimumValue
-        )
-      );
-    }
-  }
-
   _getCurrentValue = () => {
     return this.state.value.__getValue();
   };
@@ -615,9 +599,14 @@ export default class Slider extends PureComponent {
 }
 
 var defaultStyles = StyleSheet.create({
-  container: {
-    height: 280,
+  containerHorizontal: {
+    height: 40,
     justifyContent: 'center',
+  },
+  containerVertical: {
+    height: 280,
+    width: 30,
+    justifyContent: 'flex-end',
   },
   track: {
     height: TRACK_SIZE,
