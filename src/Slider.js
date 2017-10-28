@@ -279,9 +279,7 @@ export default class Slider extends PureComponent {
         ...valueVisibleStyle
       };
     }
-    console.log(thumbTop);
-    var top = containerSize.height - thumbTop;
-    console.log(top);
+
     var touchOverflowStyle = this._getTouchOverflowStyle();
     return (
       <View {...other} style={[mainStyles.container, {
@@ -397,7 +395,6 @@ export default class Slider extends PureComponent {
   _handleMeasure = (name: string, x: Object) => {
     var {width, height} = x.nativeEvent.layout;
     var size = {width: width, height: height};
-    console.log(size);
     var storeName = `_${name}`;
     var currentSize = this[storeName];
     if (currentSize && width === currentSize.width && height === currentSize.height) {
@@ -430,7 +427,6 @@ export default class Slider extends PureComponent {
 
   _getThumbTop = (value: number) => {
     var ratio = this._getVerticalRatio(value);
-    console.log(ratio);
     return ratio * (this.state.containerSize.height - this.state.thumbSize.height);
   };
 
@@ -534,7 +530,6 @@ export default class Slider extends PureComponent {
       size.width = Math.max(0, props.thumbTouchSize.width - state.thumbSize.width);
       size.height = Math.max(0, props.thumbTouchSize.height - state.containerSize.height);
     }
-    console.log(size);
     return size;
   };
 
@@ -592,8 +587,9 @@ export default class Slider extends PureComponent {
 
   _renderDebugThumbTouchRect = (thumb) => {
     var thumbTouchRect = this._getThumbTouchRect();
+    var isHorizontal = this._isHorizontal();
     var positionStyle = {
-      left: thumbTouchRect.x,
+      left: isHorizontal ? thumb : thumbTouchRect.x,
       top: thumbTouchRect.y,
       width: thumbTouchRect.width,
       height: thumbTouchRect.height,
