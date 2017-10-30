@@ -18,6 +18,7 @@ import PropTypes from 'prop-types';
 
 var TRACK_SIZE = 4;
 var THUMB_SIZE = 20;
+var VERTICAL_TRACK_SIZE = 280;
 
 function Rect(x, y, width, height) {
   this.x = x;
@@ -108,7 +109,12 @@ export default class Slider extends PureComponent {
      * The default is {width: 40, height: 40}.
      */
     thumbTouchSize: PropTypes.shape(
-      {width: PropTypes.number, height: PropTypes.number}
+      {
+        width: PropTypes.number,
+        height: PropTypes.number,
+        marginTop: PropTypes.number,
+        marginLeft: PropTypes.number
+      }
     ),
 
     /**
@@ -149,6 +155,14 @@ export default class Slider extends PureComponent {
     thumbImage: Image.propTypes.source,
 
     /**
+     * Defines the style of the thumb image.
+     */
+    thumbImageStyle: PropTypes.shape({
+      width: PropTypes.number,
+      height: PropTypes.number
+    }),
+
+    /**
      * Set this to true to visually see the thumb touch rect in green.
      */
     debugTouchArea: PropTypes.bool,
@@ -187,7 +201,12 @@ export default class Slider extends PureComponent {
     minimumTrackTintColor: '#3f3f3f',
     maximumTrackTintColor: '#b3b3b3',
     thumbTintColor: '#343434',
-    thumbTouchSize: {width: 40, height: 40},
+    thumbTouchSize: {
+      width: 40,
+      height: 40,
+      marginTop: 0,
+      marginLeft: 0
+    },
     debugTouchArea: false,
     animationType: 'timing',
     orientation: 'horizontal',
@@ -286,7 +305,7 @@ export default class Slider extends PureComponent {
         justifyContent: this._isHorizontal() ? 'center' : 'flex-end'
       }, style]} onLayout={this._measureContainer}>
         <View
-          style={[{backgroundColor: maximumTrackTintColor,}, mainStyles.track, trackStyle]}
+          style={[{backgroundColor: maximumTrackTintColor,}, this._isHorizontal() ? mainStyles.track : mainStyles.verticalTrack, trackStyle]}
           renderToHardwareTextureAndroid={true}
           onLayout={this._measureTrack} />
         <Animated.View
@@ -558,7 +577,7 @@ export default class Slider extends PureComponent {
       );
     } else {
       var h = state.containerSize.height - this._getThumbTop(this._getCurrentValue())
-      - state.thumbSize.height;
+      - state.thumbSize.height + this.props.thumbTouchSize.marginTop;
       return new Rect(
         0,
         h,
@@ -590,11 +609,17 @@ export default class Slider extends PureComponent {
   };
 
   _renderThumbImage = () => {
-    var {thumbImage} = this.props;
-
+    var {thumbImage, thumbImageStyle } = this.props;
     if (!thumbImage) return;
+    var props = {
+      source: thumbImage
+    };
 
-    return <Image source={thumbImage} />;
+    if (thumbImageStyle) {
+      props.style = thumbImageStyle;
+    }
+
+    return <Image {...props} />;
   };
 }
 
@@ -602,14 +627,20 @@ var defaultStyles = StyleSheet.create({
   containerHorizontal: {
     height: 40,
     justifyContent: 'center',
+    overflow: 'hidden'
   },
   containerVertical: {
     height: 280,
     width: 30,
     justifyContent: 'flex-end',
+    overflow: 'hidden'
   },
   track: {
     height: TRACK_SIZE,
+    borderRadius: TRACK_SIZE / 2,
+  },
+  verticalTrack: {
+    height: VERTICAL_TRACK_SIZE,
     borderRadius: TRACK_SIZE / 2,
   },
   thumb: {
